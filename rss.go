@@ -50,7 +50,7 @@ func NewRSS(results *AlgoliaSearchResponse, op *OutputParams) *RSS {
 	for _, hit := range results.Hits {
 		item := RSSItem{
 			Title:     CDATA{hit.GetTitle()},
-			Link:      hit.GetURL(op.LinkTo),
+			Link:      hit.GetURL(op),
 			Author:    hit.Author,
 			Comments:  hit.GetPermalink(),
 			Published: Timestamp("rss", hit.GetCreatedAt()),

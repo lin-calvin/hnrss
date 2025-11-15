@@ -50,7 +50,7 @@ func NewAtom(results *AlgoliaSearchResponse, op *OutputParams) *Atom {
 			Updated:   Timestamp("atom", hit.GetCreatedAt()),
 			Published: Timestamp("atom", hit.GetCreatedAt()),
 			Links: []AtomLink{
-				{hit.GetURL(op.LinkTo), "alternate", ""},
+				{hit.GetURL(op), "alternate", ""},
 			},
 			Author: hit.Author,
 		}

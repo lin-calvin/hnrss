@@ -19,6 +19,7 @@ type OutputParams struct {
 	LinkTo      string `form:"link"`
 	Format      string
 	SelfLink    string
+        JinaAI      bool
 }
 
 type SearchParams struct {

@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/russross/blackfriday/v2"
 )
 
 func Newest(c *gin.Context) {
@@ -231,4 +234,60 @@ func Item(c *gin.Context) {
 	op.Link = "https://news.ycombinator.com/item?id=" + sp.ID
 
 	Generate(c, &sp, &op)
+}
+
+func Content(c *gin.Context) {
+	// Extract the URL from the path parameter
+	targetURL := c.Param("url")
+	if targetURL == "" {
+		c.String(http.StatusBadRequest, "URL parameter is required")
+		return
+	}
+
+	// Remove leading slash if present (Gin's wildcard parameter includes it)
+	if strings.HasPrefix(targetURL, "/") {
+		targetURL = targetURL[1:]
+	}
+
+	// Decode the URL (it might be URL-encoded)
+	decodedURL, err := url.QueryUnescape(targetURL)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid URL encoding")
+		return
+	}
+
+	// Make sure the URL has a scheme
+	if !strings.HasPrefix(decodedURL, "http://") && !strings.HasPrefix(decodedURL, "https://") {
+		decodedURL = "https://" + decodedURL
+	}
+
+	// Construct the Jina.ai API URL
+	jinaURL := "https://r.jina.ai/" + decodedURL
+
+	// Make GET request to Jina.ai API
+	resp, err := http.Get(jinaURL)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to fetch content: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		c.String(http.StatusBadGateway, "Jina.ai API returned status: %d", resp.StatusCode)
+		return
+	}
+
+	// Read the response body (markdown format)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to read response: %v", err)
+		return
+	}
+
+	// Convert markdown to HTML
+	html := blackfriday.Run(body)
+
+	// Return the HTML response
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	c.String(http.StatusOK, string(html))
 }

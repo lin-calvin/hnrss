@@ -67,6 +67,11 @@ func ParseRequest(c *gin.Context, sp *SearchParams, op *OutputParams) {
 }
 
 func Generate(c *gin.Context, sp *SearchParams, op *OutputParams) {
+	// Set JinaAI to true if ?jina=true is in URL params
+	if c.Query("jina") == "true" {
+		op.JinaAI = true
+	}
+	
 	if op.Format == "" {
 		op.Format = "rss"
 	}

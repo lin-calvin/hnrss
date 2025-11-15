@@ -39,7 +39,7 @@ func NewJSONFeed(results *AlgoliaSearchResponse, op *OutputParams) *JSONFeed {
 		item := JSONFeedItem{
 			ID:          hit.GetPermalink(),
 			Title:       hit.GetTitle(),
-			URL:         hit.GetURL(op.LinkTo),
+			URL:         hit.GetURL(op),
 			ExternalURL: hit.GetPermalink(),
 			Published:   Timestamp("jsonfeed", hit.GetCreatedAt()),
 			Author: JSONFeedItemAuthor{

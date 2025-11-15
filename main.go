@@ -53,6 +53,9 @@ func main() {
 	registerEndpoint(r, "/whoishiring/freelance", SeekingFreelance)
 	registerEndpoint(r, "/whoishiring", SeekingAll)
 
+	// Content endpoint for fetching and converting web content
+	r.GET("/content/*url", Content)
+
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "https://news.ycombinator.com/favicon.ico")
 	})

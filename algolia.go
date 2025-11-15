@@ -66,16 +66,25 @@ func (hit AlgoliaSearchHit) GetPermalink() string {
 	return hackerNewsItemID + hit.ObjectID
 }
 
-func (hit AlgoliaSearchHit) GetURL(linkTo string) string {
+func (hit AlgoliaSearchHit) GetURL(op *OutputParams) string {
+	linkTo := op.LinkTo
 	if linkTo == "" {
 		linkTo = "url"
 	}
 
+	var originalURL string
 	if linkTo == "url" && hit.URL != "" {
-		return hit.URL
+		originalURL = hit.URL
 	} else {
-		return hit.GetPermalink()
+		originalURL = hit.GetPermalink()
 	}
+
+	// Add JinaAI prefix if op.JinaAI is true
+	if op.JinaAI {
+		return SiteURL+"/content/" + url.QueryEscape(originalURL)
+	}
+
+	return originalURL
 }
 
 func buildTemplateEngine(name string) *template.Template {
