@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -12,11 +13,18 @@ import (
 const (
 	NSDublinCore = "http://purl.org/dc/elements/1.1/"
 	NSAtom       = "http://www.w3.org/2005/Atom"
-	SiteURL      = "https://hnrss.org"
 )
 
 type CDATA struct {
 	Value string `xml:",cdata"`
+}
+
+func GetSiteURL() string {
+	siteURL := os.Getenv("SITEURL")
+	if siteURL == "" {
+		siteURL = "https://hnrss.org"
+	}
+	return siteURL
 }
 
 func Timestamp(fmt string, input time.Time) string {
@@ -63,7 +71,7 @@ func ParseRequest(c *gin.Context, sp *SearchParams, op *OutputParams) {
 	}
 
 	op.Format = c.GetString("format")
-	op.SelfLink = SiteURL + c.Request.URL.String()
+	op.SelfLink = GetSiteURL() + c.Request.URL.String()
 }
 
 func Generate(c *gin.Context, sp *SearchParams, op *OutputParams) {

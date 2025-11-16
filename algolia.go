@@ -81,7 +81,7 @@ func (hit AlgoliaSearchHit) GetURL(op *OutputParams) string {
 
 	// Add JinaAI prefix if op.JinaAI is true
 	if op.JinaAI {
-		return SiteURL+"/content/" + url.QueryEscape(originalURL)
+		return GetSiteURL()+"/content/" + url.QueryEscape(originalURL)
 	}
 
 	return originalURL
